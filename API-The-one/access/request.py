@@ -7,7 +7,7 @@ api_address = "https://the-one-api.dev/v2"
 api_key = {"Authorization": "Bearer Dtc0sK3rWKVp2asbK0PS"}
 
 
-def make_request(key_endpoint, id_research=None):
+def make_request(key_endpoint, id_research=''):
 
     temporary_dict = access.addresses.create_endpoints(id_research)
     address_requested = f'{api_address}{temporary_dict[key_endpoint][0]}'
