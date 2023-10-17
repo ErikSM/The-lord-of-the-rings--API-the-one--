@@ -12,13 +12,10 @@ class App:
 
     def __init__(self):
 
-        self.item_id = None
-        self.id_is_saved = False
-
         self.menu_selected = None
 
-        self.menus = list()
-        self.secound_menus = dict()
+        self.primaries_endpoints = list()
+        self.secondaries_endpoints = dict()
 
         self.window = Tk()
         self.window.title("The Lord of the rings App")
@@ -29,7 +26,7 @@ class App:
         self.menu = Menu(self.window, bd=10)
         self.window.config(menu=self.menu)
 
-        self.menu.add_command(label='Initial setting', command=lambda: self.setting_menus(True))
+        self.menu.add_command(label='Initial setting', command=self.inital_settings)
 
         self.entry_path = Entry(self.window, bd=7, disabledbackground='white', width=156)
         self.entry_path.config(state=DISABLED)
@@ -74,6 +71,7 @@ class App:
 
         self.window.mainloop()
 
+##  ----------  doesn't not work --------------------------
     def _clear(self, field='all'):
         if field == "list left":
             self.list_left.delete(0, END)
@@ -86,9 +84,12 @@ class App:
             self.entry_path.delete(0, END)
             self.entry_path.config(state=DISABLED)
         else:
+
             self.text.delete(1.0, END)
             self.list_right.delete(0, END)
             self.list_left.delete(0, END)
+
+    # ----------------------------------------------------------------------
 
     def _write_text(self, message, field='text'):
         if field == "list left":
@@ -108,58 +109,53 @@ class App:
             self.text.insert(END, message)
             self.text.insert(END, '\n\n')
 
-    def setting_menus(self, from_menu=False):
-        if from_menu:
-            self._clear()
-            self._clear('entry path')
+    def inital_settings(self):
+        self._clear('entry path')
+        self._clear()
 
-        self.id_is_saved = False
-        self.item_id = None
+        self.setting_menus()
+
+    def setting_menus(self):
 
         self._write_text(string_about_api, 'text not space')
         self._write_text('menu', 'entry path')
 
         endpoints = create_endpoints()
         for i in endpoints:
-            if i == 'research id':
+            if i == 'research id' or not endpoints[i][2]:
                 pass
-            elif endpoints[i][2]:
-                self.secound_menus[i] = endpoints[i][3]
             else:
-                self.menus.append(i)
+                self.primaries_endpoints.append(i)
+                self.secondaries_endpoints[i] = endpoints[i][3]
 
-        for i in self.menus:
+        for i in self.primaries_endpoints:
             self._write_text(i, 'list left')
 
-        print(self.secound_menus)
-
     def setting_buttons(self, config='initial'):
+
         if config == 'initial':
             self.buttons_list[0].config(text='research', command=self.do_research)
-        elif config == 'all books':
-            self.buttons_list[0].config(text='book selected', command=self.do_research)
+
+        else:
+            names = self.secondaries_endpoints[config]
+            cont = 0
+            for i in names:
+                self.buttons_list[cont].config(text=i, command=self.do_research)
+                cont += 1
 
         cont = 2
         while cont < 7:
             for i in self.buttons_list:
-
                 i.grid(row=cont, column=8)
                 cont += 1
 
+#  -----------   in progress ----------  -----------------------
     def do_research(self):
-        global requested
+
         capture = self.list_left.get(ANCHOR)
         self.setting_buttons(capture)
 
-        # ------  em desenvolvimento  ------------------------------
-        if self.id_is_saved:
-            for i in self.item_id:
-                if i == capture:
-                    requested = make_request(self.menu_selected, self.item_id[capture])
-        else:
-            requested = make_request(capture)
-
-        # ------------------------------------------------------
+        requested = make_request(capture)
 
         dictionary_opened = requested[0]
         dict_description = requested[1]
@@ -176,13 +172,6 @@ class App:
                 self._write_text(description)
 
                 for j in dictionary_opened[i]:
-                    # ------------  em desenvolvimento  ----------------------
-                    saved_id = dict()
-                    saved_id[j['name']] = j['_id']
-                    self.item_id = saved_id
-                    self.id_is_saved = True
-                    self.menu_selected = 'book selected'
-                    # --------------------------------------------------
 
                     item_to_print = j
                     self._write_text(item_to_print, 'text not space')
