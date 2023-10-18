@@ -12,7 +12,8 @@ class App:
 
     def __init__(self):
 
-        self.menu_selected = None
+        self.secound_act = False
+        self.id_selected = dict()
 
         self.primaries_endpoints = list()
         self.secondaries_endpoints = dict()
@@ -71,7 +72,6 @@ class App:
 
         self.window.mainloop()
 
-##  ----------  doesn't not work --------------------------
     def _clear(self, field='all'):
         if field == "list left":
             self.list_left.delete(0, END)
@@ -88,8 +88,6 @@ class App:
             self.text.delete(1.0, END)
             self.list_right.delete(0, END)
             self.list_left.delete(0, END)
-
-    # ----------------------------------------------------------------------
 
     def _write_text(self, message, field='text'):
         if field == "list left":
@@ -113,7 +111,14 @@ class App:
         self._clear('entry path')
         self._clear()
 
+        self.secound_act = False
+        self.id_selected = dict()
+
+        self.primaries_endpoints = list()
+        self.secondaries_endpoints = dict()
+
         self.setting_menus()
+        self.setting_buttons('initial')
 
     def setting_menus(self):
 
@@ -134,13 +139,18 @@ class App:
     def setting_buttons(self, config='initial'):
 
         if config == 'initial':
-            self.buttons_list[0].config(text='research', command=self.do_research)
+            for i in self.buttons_list:
+                i.config(text='', command=None)
 
+            self.buttons_list[0].config(text='research', command=self.do_research)
+        elif config == 'finish':
+            for i in self.buttons_list:
+                i.config(text='---', command=None)
         else:
-            names = self.secondaries_endpoints[config]
+            options = self.secondaries_endpoints[config]
             cont = 0
-            for i in names:
-                self.buttons_list[cont].config(text=i, command=self.do_research)
+            for i in options:
+                self.buttons_list[cont].config(text=i, command=lambda endpoint=i: self.do_research(endpoint))
                 cont += 1
 
         cont = 2
@@ -149,13 +159,17 @@ class App:
                 i.grid(row=cont, column=8)
                 cont += 1
 
-#  -----------   in progress ----------  -----------------------
-    def do_research(self):
+    #  -----------  for test (temporary)----------  -----------------------
+    def do_research(self, option_selected=None):
 
         capture = self.list_left.get(ANCHOR)
-        self.setting_buttons(capture)
 
-        requested = make_request(capture)
+        if self.secound_act:
+            requested = make_request(option_selected, self.id_selected[capture])
+            self.setting_buttons('finish')
+        else:
+            self.setting_buttons(capture)
+            requested = make_request(capture)
 
         dictionary_opened = requested[0]
         dict_description = requested[1]
@@ -172,16 +186,26 @@ class App:
                 self._write_text(description)
 
                 for j in dictionary_opened[i]:
-
                     item_to_print = j
                     self._write_text(item_to_print, 'text not space')
 
-                    if capture == "movies quotes":
+                    if capture == "movies quotes" or \
+                            option_selected == 'quotes of character' or \
+                            option_selected == 'quotes of movie':
+
                         menu_item = j['dialog']
-                    elif capture == "books chapters":
+
+                    elif capture == "books chapters" or \
+                            option_selected == 'chapters of book':
+
                         menu_item = j['chapterName']
+
                     else:
                         menu_item = j['name']
+
+                    if not self.secound_act:
+                        self.id_selected[menu_item] = j['_id']
+
                     self._write_text(menu_item, 'list left')
 
             else:
@@ -190,5 +214,8 @@ class App:
                 information = f'{dictionary_opened[i]}'
                 self._write_text(information, 'list right')
 
+            if not self.secound_act:
+                self.secound_act = True
+#  -----------------------------------------------------------------
 
 App()
