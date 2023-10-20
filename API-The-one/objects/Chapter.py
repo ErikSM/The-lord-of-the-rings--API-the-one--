@@ -1,15 +1,17 @@
 from access.request import make_request
 
 
-class Character:
+class Chapter:
 
     def __init__(self, code_id):
-        self.__info = make_request('about character', code_id)
 
-        self.__name = self.__info['docs'][0]['name']
+        self.__info = make_request('about chapter', code_id)
+
         self.__code_id = self.__info['docs'][0]['_id']
+        self.__name = self.__info['docs'][0]['chapterName']
 
-        self.__personal_details = dict()
+        self.__which = {'book id': self.__info['docs'][0]['book']}
+
         self.__basic_info = dict()
 
     def __str__(self):
@@ -18,10 +20,6 @@ class Character:
     def organize_information(self):
         self.__basic_info['id'] = self.__code_id
         self.__basic_info['title'] = self.__name
-
-        for i in self.__info['docs'][0]:
-            if not i == 'name' or i == '_id':
-                self.__personal_details[i] = self.__info['docs'][0][i]
 
     @property
     def name(self):
@@ -32,9 +30,9 @@ class Character:
         return self.__code_id
 
     @property
-    def personal_details(self):
-        return self.__personal_details
+    def which(self):
+        return self.__which
 
     @property
-    def baisc_info(self):
+    def basic_info(self):
         return self.__basic_info
