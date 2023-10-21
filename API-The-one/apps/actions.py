@@ -5,6 +5,22 @@ from objects.Movie import Movie
 from objects.Quote import Quote
 
 
+def processing_data(menu_selected, id_selected):
+    info_tuple = tuple
+    if menu_selected == 'all books':
+        info_tuple = processing_book(id_selected)
+    elif menu_selected == 'all movies':
+        info_tuple = processing_movie(id_selected)
+    elif menu_selected == 'all characters':
+        info_tuple = processing_character(id_selected)
+    elif menu_selected == 'all quotes':
+        info_tuple = processing_quote(id_selected)
+    elif menu_selected == 'all chapters':
+        info_tuple = processing_chapter(id_selected)
+
+    return info_tuple
+
+
 def processing_book(code_id):
     book = Book(code_id)
     book.capture_chapters()
