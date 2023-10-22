@@ -1,4 +1,5 @@
 from access.request import make_request
+from objects.Book import Book
 
 
 class Chapter:
@@ -10,8 +11,8 @@ class Chapter:
         self.__code_id = self.__info['docs'][0]['_id']
         self.__name = self.__info['docs'][0]['chapterName']
 
-        self.__which = {'book id': self.__info['docs'][0]['book']}
-
+        self.__which = {'book': self.__info['docs'][0]['book']}
+        self.__details = {'details': 'No further details found'}
         self.__basic_info = dict()
 
     def __str__(self):
@@ -32,6 +33,10 @@ class Chapter:
     @property
     def which(self):
         return self.__which
+
+    @property
+    def details(self):
+        return self.__details
 
     @property
     def basic_info(self):

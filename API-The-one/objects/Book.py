@@ -11,6 +11,7 @@ class Book:
         self.__code_id = self.__info['docs'][0]['_id']
 
         self.__all_chapters = dict()
+        self.__details = {'details': 'No further details found'}
 
         self.__basic_info = dict()
 
@@ -39,6 +40,10 @@ class Book:
     @property
     def all_chapters(self):
         return self.__all_chapters
+
+    @property
+    def details(self):
+        return self.__details
 
     @property
     def basic_info(self):

@@ -11,8 +11,8 @@ class Movie:
         self.__code_id = self.__info['docs'][0]['_id']
 
         self.__all_quotes = dict()
-
         self.__tecnical_details = dict()
+
         self.__basic_info = dict()
 
     def __str__(self):

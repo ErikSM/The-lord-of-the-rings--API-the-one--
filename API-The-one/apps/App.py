@@ -12,9 +12,10 @@ class App:
     def __init__(self):
 
         self.primaries_endpoints = list()
-        self.ids_to_select = dict()
 
+        self.ids_to_select = dict()
         self.menu_selected = str
+        self.item_selected = str
 
         self.window = Tk()
         self.window.title("The Lord of the rings App")
@@ -22,7 +23,7 @@ class App:
         self.window.resizable(False, False)
         self.window.config(bg=colors['black'], bd=15)
 
-        self.menu = Menu(self.window, bd=10)
+        self.menu = Menu(self.window)
         self.window.config(menu=self.menu)
 
         self.menu.add_command(label='Initial setting', command=self.inital_settings)
@@ -92,6 +93,7 @@ class App:
             self.list_right.config(state=DISABLED)
 
     def _write_text(self, message, field='text'):
+
         if field == "list left":
             self.list_left.insert(END, message)
         elif field == "list right":
@@ -111,7 +113,7 @@ class App:
             self.text.insert(END, '\n\n')
 
     def inital_settings(self):
-        self.list_left.config(state=NORMAL)
+        self.text.config(state=NORMAL)
 
         self._clear('entry path')
         self._clear()
@@ -149,7 +151,7 @@ class App:
             self.buttons_list[0].config(text='back to start', command=self.inital_settings)
 
         else:
-            self.buttons_list[0].config(text=f'about {config[4:-1]}', command=self.select_item)
+            self.buttons_list[0].config(text=f'about {config[4:-1]}', command=self.do_search_about_item)
 
         cont = 2
         while cont < 7:
@@ -172,29 +174,33 @@ class App:
 
             self._clear()
             self._write_text(capture, 'entry path')
-            self._write_text(f'--(({capture}))--')
 
-            for i in requested:
-                if not i == 'docs':
-                    self._write_text(f'--({i})--', 'list right')
-                    self._write_text(requested[i], 'list right')
+            self._show_research(requested)
 
-            for i in requested['docs']:
-                self._write_text(i)
+    def _show_research(self, requested):
 
-                if capture == 'all chapters':
-                    name = i['chapterName']
-                elif capture == 'all quotes':
-                    name = i['dialog']
-                else:
-                    name = i['name']
-                self.ids_to_select[name] = i['_id']
+        self._write_text(f'--(({self.menu_selected}))--')
 
-            for i in self.ids_to_select:
-                self._write_text(i, 'list left')
+        for i in requested:
+            if not i == 'docs':
+                self._write_text(f'--({i})--', 'list right')
+                self._write_text(requested[i], 'list right')
 
-    def select_item(self):
+        for i in requested['docs']:
+            self._write_text(i)
 
+            if self.menu_selected == 'all chapters':
+                name = i['chapterName']
+            elif self.menu_selected == 'all quotes':
+                name = i['dialog']
+            else:
+                name = i['name']
+            self.ids_to_select[name] = i['_id']
+
+        for i in self.ids_to_select:
+            self._write_text(i, 'list left')
+
+    def do_search_about_item(self):
         capture = self.list_left.get(ANCHOR)
 
         try:
@@ -203,27 +209,30 @@ class App:
             self._clear('text')
             self._write_text('Error: You have to select a menu item', 'text')
         else:
-
+            self.item_selected = capture
             data_tuple = processing_data(self.menu_selected, id_selected)
-            item_searched = data_tuple[0]
-            basic_info = data_tuple[1]
-            others_info = data_tuple[2]
 
             self._clear()
-            self._write_text(capture, 'entry path')
+            self._write_text(self.item_selected, 'entry path')
 
-            self._write_text(f'{self.menu_selected[4:-1]} selected:', 'list left')
-            self._write_text('\n', 'list left')
-            self._write_text(f'(( {item_searched} ))', 'list left')
+            self._show_search_about_item(data_tuple)
 
-            for i in basic_info:
-                self._write_text(f'---({i})---', 'list right')
-                self._write_text(f'{basic_info[i]}', 'list right')
-                self._write_text(f'\n', 'list right')
+    def _show_search_about_item(self, data_tuple):
+        text_data, list_right_data, list_left_data = data_tuple[0], data_tuple[1], data_tuple[2]
 
-            self._write_text(f'--({others_info[1].title()})--', 'text not space')
-            for i in others_info[0]:
-                self._write_text(f'[ {i} ]: {others_info[0][i]}', 'text not space')
+        self._write_text(f'  *{self.menu_selected[4:-1]} selected:'.title())
+        for i in text_data:
+            self._write_text(f'-[{i}]: {text_data[i]}', 'text not space')
 
-            self.setting_buttons('finish')
-            self.list_left.config(state=DISABLED)
+        for i in list_right_data:
+            self._write_text(f'---({i})---', 'list right')
+            self._write_text(f'{list_right_data[i]}', 'list right')
+            self._write_text(f'\n', 'list right')
+
+        for i in list_left_data:
+            self.ids_to_select = dict()
+            self.ids_to_select[list_left_data[i]] = i
+            self._write_text(f'{list_left_data[i]}', 'list left')
+
+        self.setting_buttons('finish')
+        self.text.config(state=DISABLED)

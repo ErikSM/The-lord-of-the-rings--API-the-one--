@@ -9,7 +9,9 @@ class Character:
         self.__name = self.__info['docs'][0]['name']
         self.__code_id = self.__info['docs'][0]['_id']
 
+        self.__which = {'book': 'unidentified book', 'movie': 'unidentified movie'}
         self.__personal_details = dict()
+
         self.__basic_info = dict()
 
     def __str__(self):
@@ -30,6 +32,10 @@ class Character:
     @property
     def code_id(self):
         return self.__code_id
+
+    @property
+    def which(self):
+        return self.__which
 
     @property
     def personal_details(self):

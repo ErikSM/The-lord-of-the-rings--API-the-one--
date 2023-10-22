@@ -26,7 +26,7 @@ def processing_book(code_id):
     book.capture_chapters()
     book.organize_information()
 
-    return book, book.basic_info, (book.all_chapters, 'chapters')
+    return book.details, book.basic_info, book.all_chapters
 
 
 def processing_movie(code_id):
@@ -34,25 +34,25 @@ def processing_movie(code_id):
     movie.capture_quotes()
     movie.organize_information()
 
-    return movie, movie.basic_info, (movie.all_quotes, 'quotes')
+    return movie.tecnical_details, movie.basic_info, movie.all_quotes
 
 
 def processing_character(code_id):
     character = Character(code_id)
     character.organize_information()
 
-    return character, character.baisc_info, (character.personal_details, 'personal details')
+    return character.personal_details, character.baisc_info, character.which
 
 
 def processing_quote(code_id):
     quote = Quote(code_id)
     quote.organize_information()
 
-    return quote, quote.basic_info, (quote.which, 'which movie and character')
+    return quote.details, quote.basic_info, quote.which
 
 
 def processing_chapter(code_id):
     chapter = Chapter(code_id)
     chapter.organize_information()
 
-    return chapter, chapter.basic_info, (chapter.which, 'which book')
+    return chapter.details, chapter.basic_info, chapter.which
