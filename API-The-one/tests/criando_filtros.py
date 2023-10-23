@@ -1,35 +1,18 @@
 from access.request import make_request
 
 
-def races_of_characters(request, code_id=''):
+def requesting_test(request, code_id=''):
     request = make_request(request, code_id)
-    # all races of characters
-    races = set()
-    for i in request['docs']:
-        for j in i:
-            if j == 'race':
-                races.add(i[j])
-
-    print(f'\n\n((races)) total:{len(races)}')
-    print('-' * 30)
-    for i in races:
-        print(i)
+    for i in request:
+        if i == 'docs':
+            print(f'({i}')
+            for j in request[i]:
+                print(j)
+        else:
+            print(f'({i})')
+            print(request[i])
 
 
-def realms_founded(request, code_id=''):
-    request = make_request(request, code_id)
-    # all realms
-    realms = set()
-    for i in request['docs']:
-        for j in i:
-            if j == 'realm':
-                realms.add(i[j])
+# requesting_test('quotes of movie', '5cd95395de30eff6ebccde5b')
+requesting_test('all books')
 
-    print(f'\n\n((realms)) total:{len(realms)}')
-    print('-' * 30)
-    for i in realms:
-        print(i)
-
-
-races_of_characters('all characters')
-realms_founded('all characters')
