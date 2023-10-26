@@ -1,4 +1,3 @@
-from access.request import make_request
 from objects.Book import Book
 from objects.Chapter import Chapter
 from objects.Character import Character
