@@ -10,7 +10,6 @@ from apps.actions import processing_data
 class App:
 
     def __init__(self):
-
         self.primaries_endpoints = list()
 
         self.ids_to_select = dict()
@@ -26,7 +25,7 @@ class App:
         self.menu = Menu(self.window)
         self.window.config(menu=self.menu)
 
-        self.menu.add_command(label='Initial setting', command=self.inital_settings)
+        self.menu.add_command(label='Initial setting', command=self.initial_settings)
 
         self.entry_path = Entry(self.window, bd=7, disabledbackground=colors['black'], width=156)
         self.entry_path.config(state=DISABLED)
@@ -74,6 +73,7 @@ class App:
     def _clear(self, field='all'):
         if field == "list left":
             self.list_left.delete(0, END)
+
         elif field == "list right":
             self.list_right.config(state=NORMAL)
             self.list_right.delete(0, END)
@@ -84,6 +84,7 @@ class App:
             self.entry_path.config(state=NORMAL)
             self.entry_path.delete(0, END)
             self.entry_path.config(state=DISABLED)
+
         else:
             self.text.delete(1.0, END)
             self.list_left.delete(0, END)
@@ -93,9 +94,9 @@ class App:
             self.list_right.config(state=DISABLED)
 
     def _write_text(self, message, field='text'):
-
         if field == "list left":
             self.list_left.insert(END, message)
+
         elif field == "list right":
             self.list_right.config(state=NORMAL)
             self.list_right.insert(END, message)
@@ -107,12 +108,13 @@ class App:
         elif field == "text not space":
             self.text.insert(END, '\n')
             self.text.insert(END, message)
+
         else:
             self.text.insert(END, '\n\n')
             self.text.insert(END, message)
             self.text.insert(END, '\n\n')
 
-    def inital_settings(self):
+    def initial_settings(self):
         self.text.config(state=NORMAL)
 
         self._clear('entry path')
@@ -126,7 +128,6 @@ class App:
         self.setting_buttons('initial')
 
     def setting_menus(self):
-
         self._write_text(string_about_api, 'text not space')
         self._write_text('menu', 'entry path')
 
@@ -141,14 +142,13 @@ class App:
             self._write_text(i, 'list left')
 
     def setting_buttons(self, config='initial'):
-
         if config == 'initial':
             for i in self.buttons_list:
                 i.config(text='', state=DISABLED)
             self.buttons_list[0].config(text='research', command=self.do_research, state=NORMAL)
 
         elif config == 'finish':
-            self.buttons_list[0].config(text='back to start', command=self.inital_settings)
+            self.buttons_list[0].config(text='back to start', command=self.initial_settings)
 
         else:
             self.buttons_list[0].config(text=f'about {config[4:-1]}', command=self.do_search_about_item)
@@ -178,7 +178,6 @@ class App:
             self._show_research(requested)
 
     def _show_research(self, requested):
-
         self._write_text(f'--(({self.menu_selected}))--')
 
         for i in requested:
