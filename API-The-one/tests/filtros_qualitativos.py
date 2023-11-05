@@ -1,4 +1,5 @@
 from access.request import make_request
+from apps.graphic import make_bar_graphic
 
 
 def races_of_characters(request, code_id=''):
@@ -18,8 +19,10 @@ def races_of_characters(request, code_id=''):
         races_characters[i['race']].append(i)
 
     for i in races_characters:
-        race_tuple = i, len(races_characters[i])
-        total_amount['races'].append(race_tuple)
+        number, name = len(races_characters[i]), i
+        if name == '':
+            name = 'undefined'
+        total_amount['races'].append((int(number), name))
 
     print(f'\n\n((races)) total:{len(races)}')
     print('-' * 30)
@@ -28,6 +31,8 @@ def races_of_characters(request, code_id=''):
     print(f'\n\ntotal for each: {len(races_characters)}')
     print('-' * 30)
     print(total_amount)
+
+    make_bar_graphic(total_amount['races'])
 
 
 def realms_founded(request, code_id=''):
@@ -48,8 +53,10 @@ def realms_founded(request, code_id=''):
             characters_realms[i['realm']].append(i['name'])
 
     for i in characters_realms:
-        temporary_tuple = (i, len(characters_realms[i]))
-        total_amount['realms'].append(temporary_tuple)
+        number, name = len(characters_realms[i]), i
+        if name == '':
+            name = 'undefined'
+        total_amount['realms'].append((int(number), name))
 
     print(f'\n\n((realms)) total:{len(realms)}')
     print('-' * 30)
@@ -58,6 +65,8 @@ def realms_founded(request, code_id=''):
     print(f'\n\n((realms_ dict)) total:{len(characters_realms)}')
     print('-' * 30)
     print(total_amount)
+
+    make_bar_graphic(total_amount['realms'])
 
 
 def time_of_death(request, code_id=''):
@@ -122,8 +131,9 @@ def genders_data(request, code_id=''):
         print(i)
 
 
-# races_of_characters('all characters')
+races_of_characters('all characters')
 realms_founded('all characters')
+
 """time_of_death('all characters')
 time_of_birth('all characters')
 genders_data('all characters')"""

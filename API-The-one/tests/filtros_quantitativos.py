@@ -37,7 +37,7 @@ def organize_movies_dict(data):
     all_movies = make_request('all movies')
 
     movies_dict = dict()
-    premium_dictonary = dict()
+    premium_dictionary = dict()
 
     for i in all_movies['docs']:
         data_list = list()
@@ -47,7 +47,7 @@ def organize_movies_dict(data):
                 info = j, i[j]
                 data_list.append(info)
 
-                premium_dictonary[j] = list()
+                premium_dictionary[j] = list()
 
         movies_dict[i['name']] = data_list
 
@@ -55,18 +55,17 @@ def organize_movies_dict(data):
         print(f'({i})')
         print(movies_dict[i])
         for j in movies_dict[i]:
-            premium_dictonary[j[0]].append((int(j[1]), i))
+            premium_dictionary[j[0]].append((int(j[1]), i))
 
     jump_lines()
 
-    for i in premium_dictonary:
-
+    for i in premium_dictionary:
         print(f'{i}')
-        print(premium_dictonary[i])
+        print(premium_dictionary[i])
 
-        make_bar_graphic(premium_dictonary[i], i)
+        make_bar_graphic(premium_dictionary[i], i)
 
-    #make_bar_graphic(premium_dictonary[data], data)
+    # make_bar_graphic(premium_dictionary[data], data)
 
 
 # analyzing_dictionary('all movies')

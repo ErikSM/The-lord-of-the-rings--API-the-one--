@@ -28,15 +28,18 @@ def make_lines_graphic(data_dict: dict, graphic_name='graphic: Line'):
     plt.show()
 
 
-def make_bar_graphic(data_list: list, graphic_name='graphic: Line'):
-    plt.figure(figsize=(14, 4), facecolor=colors['dark_green'])
+def make_bar_graphic(data_list: list, graphic_name='graphic: Bar'):
+    if len(data_list) > 25:
+        plt.figure(figsize=(14, 6), facecolor=colors['dark_green'])
+    else:
+        plt.figure(figsize=(14, 4), facecolor=colors['dark_green'])
     plt.axes().set_facecolor(colors['black'])
 
     plt.tick_params(axis='x', labelsize=6)
     plt.tick_params(axis='y', labelsize=8)
 
-    list_colors = ['blue', 'red', 'yellow', 'pink',
-                   'purple', 'white', 'grey', 'blue', 'red', 'pink']
+    list_colors = ['blue', 'red', 'yellow', 'pink', 'purple',
+                   'white', 'grey', 'orange', 'red', 'pink']
 
     cont = 0
     for i in data_list:
@@ -45,8 +48,11 @@ def make_bar_graphic(data_list: list, graphic_name='graphic: Line'):
         else:
             x_axle, y_axle = i[1], i[0]
 
-            plt.barh(x_axle, y_axle, align='center', color=list_colors[cont])
-            cont += 1
+            if len(data_list) > len(list_colors):
+                plt.barh(x_axle, y_axle, align='center')
+            else:
+                plt.barh(x_axle, y_axle, align='center', color=list_colors[cont])
+                cont += 1
 
     plt.title("{}".format(graphic_name), font="Times New Roman", color="white", fontsize=17)
     plt.xlabel("{}".format('Numbers:'), font="Consolas", color="black", fontsize=3, loc='right')
