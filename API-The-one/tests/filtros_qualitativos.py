@@ -79,46 +79,50 @@ TA = "Third Age"
 FO = "Fourth Age"
 SR = "The Shire Reckoning was the calendar kept by the hobbits " \
      "of the Shire, very close to the King's Reckoning"
-ages = [YT, FA, SA, TA, SR, FO]
+ages_string = [YT, FA, SA, TA, SR, FO]
 
 
 def time_of_death(request, code_id=''):
     request = make_request(request, code_id)
+
+    total_amount = dict()
     death = list()
+    ages = set()
+
     for i in request['docs']:
         for j in i:
             if j == 'death':
                 death.append(i[j])
 
+    for i in death:
+        if i[2:3] == ' ':
+            ages.add(i[:2])
+
+    frequency_of_death = {i: list() for i in ages}
+
+    for i in death:
+        if i[:2] in ages:
+            frequency_of_death[i[:2]].append(i)
+
+    total_amount['death'] = [(len(frequency_of_death[i]), i) for i in frequency_of_death]
+
     print(f'\n\n((death)) total:{len(death)}')
     print('-' * 30)
-    
-    iniciais = set()
     for i in death:
-        print(i)
-        if i[2:3] == ' ':
-            iniciais.add(i[:2])
-
+        if i != '' and i != 'NaN':
+            print(i)
     print(":::::::::::::::::::::")
-    temporary_dict = dict()
-    for i in iniciais:
-        temporary_dict[i] = list()
+    for i in frequency_of_death:
+        print(f'{i}({len(frequency_of_death[i])}): {frequency_of_death[i]}')
+    print(total_amount)
 
-    for i in death:
-        if i[2:3] in iniciais:
-            temporary_dict[i].append(i)
-
-    for i in temporary_dict:
-        print(f'{i}: {len(i)}')
-
-
-
-
+    make_bar_graphic(total_amount['death'], 'death')
 
 
 def time_of_birth(request, code_id=''):
     request = make_request(request, code_id)
     birth = set()
+
     for i in request['docs']:
         for j in i:
             if j == 'birth':
@@ -126,10 +130,10 @@ def time_of_birth(request, code_id=''):
 
     print(f'\n\n((birth)) total:{len(birth)}')
     print('-' * 30)
+
     iniciais = set()
     for i in birth:
         print(i)
-
         if i[2:3] == ' ':
             iniciais.add(i[:2])
     print(":::::::::::::::::::::")
@@ -177,6 +181,6 @@ def genders_data(request, code_id=''):
 # realms_founded('all characters')
 
 time_of_death('all characters')
-
 # time_of_birth('all characters')
+
 # genders_data('all characters')
