@@ -194,6 +194,7 @@ class App:
                 name = i['dialog']
             else:
                 name = i['name']
+
             self.ids_to_select[name] = i['_id']
 
         for i in self.ids_to_select:

@@ -34,7 +34,7 @@ def races_of_characters(request, code_id=''):
     print('-' * 30)
     print(total_amount)
 
-    make_bar_graphic(total_amount['races'])
+    make_bar_graphic(total_amount['races'], 'Races')
 
 
 def realms_founded(request, code_id=''):
@@ -68,7 +68,7 @@ def realms_founded(request, code_id=''):
     print('-' * 30)
     print(total_amount)
 
-    make_bar_graphic(total_amount['realms'], 'realms')
+    make_bar_graphic(total_amount['realms'], 'Realms')
 
 
 #  -------------   DEATH and BIRTH  ------------
@@ -114,45 +114,70 @@ def time_of_death(request, code_id=''):
     print(":::::::::::::::::::::")
     for i in frequency_of_death:
         print(f'{i}({len(frequency_of_death[i])}): {frequency_of_death[i]}')
+    print('\n')
     print(total_amount)
 
-    make_bar_graphic(total_amount['death'], 'death')
+    make_bar_graphic(total_amount['death'], 'Deaths')
 
 
 def time_of_birth(request, code_id=''):
     request = make_request(request, code_id)
+
     birth = set()
+    ages = set()
+    total_amount = dict()
 
     for i in request['docs']:
         for j in i:
             if j == 'birth':
                 birth.add(i[j])
 
+    for i in birth:
+        if i[2:3] == ' ':
+            if i[:2] == 'c.' or i[:2] == 'b.' or i[:2] == '22':
+                ages.add('TA')
+            else:
+                ages.add(i[:2])
+
+    frequency_of_birth = {i: list() for i in ages}
+
+    for i in birth:
+        if i[:2] in ages:
+            if i[:2] == 'c.':
+                frequency_of_birth['TA'].append(i)
+            elif i[:2] == 'b.':
+                frequency_of_birth['TA'].append(i)
+            elif i[:2] == '22':
+                frequency_of_birth['TA'].append(i)
+            else:
+                frequency_of_birth[i[:2]].append(i)
+
+    total_amount['birth'] = [(len(frequency_of_birth[i]), i) for i in frequency_of_birth]
+
     print(f'\n\n((birth)) total:{len(birth)}')
     print('-' * 30)
-
-    iniciais = set()
     for i in birth:
-        print(i)
-        if i[2:3] == ' ':
-            iniciais.add(i[:2])
+        if i != '' and i != 'NaN':
+            print(i)
     print(":::::::::::::::::::::")
-    for i in iniciais:
-        print(i)
+    for i in frequency_of_birth:
+        print(f'{i}({len(frequency_of_birth[i])}): {frequency_of_birth[i]}')
+    print('\n')
+    print(total_amount)
+
+    make_bar_graphic(total_amount['birth'], 'Births')
 
 
 #  ----------------  GENDERS  ----------------
 
 def genders_data(request, code_id=''):
     request = make_request(request, code_id)
-    total = 0
 
+    total_amount = dict()
     genders = set()
+    female, male, others = list(), list(), list()
 
-    female = list()
-    male = list()
-    others = list()
-
+    total = 0
     for i in request['docs']:
         total += 1
 
@@ -166,21 +191,26 @@ def genders_data(request, code_id=''):
                 else:
                     others.append(i[j])
 
+    total_amount['genders'] = [(len(female), 'Female'), (len(male), 'Male'), (len(others), 'Others')]
+
     print(f'\n\n((gender)) total:{total}')
     print('-' * 30)
     print(f'total famale = {len(female)}')
     print(f'total male = {len(male)}')
     print(f'Undefined: {len(others)}')
     print('-' * 30)
-
     for i in genders:
         print(i)
+    print('::::::::::::::::::')
+    print(total_amount)
+
+    make_bar_graphic(total_amount['genders'], 'Genders')
 
 
-# races_of_characters('all characters')
-# realms_founded('all characters')
+races_of_characters('all characters')
+realms_founded('all characters')
 
 time_of_death('all characters')
-# time_of_birth('all characters')
+time_of_birth('all characters')
 
-# genders_data('all characters')
+genders_data('all characters')
