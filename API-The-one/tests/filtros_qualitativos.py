@@ -83,6 +83,7 @@ ages_string = [YT, FA, SA, TA, SR, FO]
 
 
 def time_of_death(request, code_id=''):
+
     request = make_request(request, code_id)
 
     total_amount = dict()

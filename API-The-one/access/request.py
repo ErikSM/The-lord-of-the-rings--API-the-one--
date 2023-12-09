@@ -18,7 +18,6 @@ def make_request(key_endpoint, id_research=''):
         dict_required = json.loads(request.text)
 
     except Exception as ex:
-
         dict_required = {'docs': [{'name': 'Error on request', '_id': f'{ex}'}], 'total': 'xx',
                          'limit': 'xx', 'offset': 'xx', 'page': 'xx', 'pages': 'xx'}
 

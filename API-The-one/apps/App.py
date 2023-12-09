@@ -5,6 +5,9 @@ from access.api_info import string_about_api
 from access.request import make_request
 from apps.configurations import colors
 from apps.actions import processing_data
+from apps.graphic import make_bar_graphic
+from statistics.quantitative_filters import organize_movies_dict, movies_numbers_list
+from statistics.races_genders_realms import realms_founded, race_of_characters, genders_data, statistic_list
 
 
 class App:
@@ -27,6 +30,16 @@ class App:
 
         self.menu.add_command(label='Initial setting', command=self.initial_settings)
 
+        self.menu_statistic = Menu(self.menu, tearoff=0)
+        self.menu.add_cascade(label="Statistics", menu=self.menu_statistic)
+        for i in statistic_list:
+            self.menu_statistic.add_command(label=i.title(), command=lambda string=i: self.processing_statistic(string))
+
+        self.menu_movies_numbers = Menu(self.menu, tearoff=0)
+        self.menu.add_cascade(label="Numbers of movies", menu=self.menu_movies_numbers)
+        for i in movies_numbers_list:
+            self.menu_movies_numbers.add_command(label=i.title())
+
         self.entry_path = Entry(self.window, bd=7, disabledbackground=colors['black'], width=156)
         self.entry_path.config(state=DISABLED)
         self.entry_path.grid(row=0, column=0, columnspan=11)
@@ -46,7 +59,7 @@ class App:
         self.list_right.config(yscrollcommand=y_list_right.set)
 
         self.button_one = Button(self.window, text='', bd=2, width=15)
-        self.button_two = Button(self.window, text='', bd=2, width=15,)
+        self.button_two = Button(self.window, text='', bd=2, width=15, )
         self.button_three = Button(self.window, text='', bd=2, width=15)
         self.button_four = Button(self.window, text='', bd=2, width=15)
         self.button_five = Button(self.window, text='', bd=2, width=15)
@@ -146,6 +159,7 @@ class App:
             for i in self.buttons_list:
                 i.config(text='', state=DISABLED)
             self.buttons_list[0].config(text='research', command=self.do_research, state=NORMAL)
+            self.buttons_list[1].config(text='')
 
         elif config == 'finish':
             self.buttons_list[0].config(text='back to start', command=self.initial_settings)
@@ -236,3 +250,29 @@ class App:
 
         self.setting_buttons('finish')
         self.text.config(state=DISABLED)
+
+    def processing_statistic(self, string):
+        title = None
+        statistic_dict = None
+
+        if string == 'realms':
+            title = "Population of each Realm"
+            statistic_dict = realms_founded()
+        elif string == 'race':
+            title = "Number of Characters by Race"
+            statistic_dict = race_of_characters()
+        elif string == 'genders':
+            title = "Number of Characters per Gender"
+            statistic_dict = genders_data()
+
+        self._clear('text')
+        self._write_text(title, 'text')
+
+        self._do_statistic(title, string, statistic_dict)
+
+    def _do_statistic(self, title, string, statistic: dict):
+        for i in statistic[string]:
+            text = f"{i[1]}:  ({i[0]})"
+            self._write_text(text, 'text not space')
+
+        make_bar_graphic(statistic[string], title)
