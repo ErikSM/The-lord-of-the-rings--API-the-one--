@@ -6,6 +6,8 @@ from access.request import make_request
 from apps.configurations import colors
 from apps.actions import processing_data
 from apps.graphic import make_bar_graphic
+from objects.Movie import Movie
+from statistics.others import movies_to_others_list, characters_with_most_quotes_per_movie
 from statistics.quantitative_filters import organize_movies_dict, movies_numbers_list
 from statistics.races_genders_realms import realms_founded, race_of_characters, genders_data, statistic_list
 
@@ -33,12 +35,20 @@ class App:
         self.menu_statistic = Menu(self.menu, tearoff=0)
         self.menu.add_cascade(label="Statistics", menu=self.menu_statistic)
         for i in statistic_list:
-            self.menu_statistic.add_command(label=i.title(), command=lambda string=i: self.processing_statistic(string))
+            self.menu_statistic.add_command(label=i.title(),
+                                            command=lambda string=i: self.processing_statistic(string))
 
         self.menu_movies_numbers = Menu(self.menu, tearoff=0)
         self.menu.add_cascade(label="Numbers of movies", menu=self.menu_movies_numbers)
         for i in movies_numbers_list:
-            self.menu_movies_numbers.add_command(label=i.title())
+            self.menu_movies_numbers.add_command(label=i.title(),
+                                                 command=lambda string=i: self.processing_movies_numbers(string))
+
+        self.menu_others = Menu(self.menu, tearoff=0)
+        self.menu.add_cascade(label="Characters with the most quotes", menu=self.menu_others)
+        for i in movies_to_others_list:
+            self.menu_others.add_command(label=f"{Movie(i)}",
+                                         command=lambda string=i: self.processing_others(string))
 
         self.entry_path = Entry(self.window, bd=7, disabledbackground=colors['black'], width=156)
         self.entry_path.config(state=DISABLED)
@@ -251,6 +261,20 @@ class App:
         self.setting_buttons('finish')
         self.text.config(state=DISABLED)
 
+
+#  ---  ------------ in progress  ----------  --------
+    def processing_others(self, string):
+
+        title = Movie(string)
+        statistic_dict = characters_with_most_quotes_per_movie()
+
+        self._clear('text')
+        self._write_text(title, 'text')
+
+        self._do_statistic(title, string, statistic_dict)
+
+#  ---------------------------------------------------
+
     def processing_statistic(self, string):
         title = None
         statistic_dict = None
@@ -270,9 +294,36 @@ class App:
 
         self._do_statistic(title, string, statistic_dict)
 
+    def processing_movies_numbers(self, string):
+        title = None
+        movies_numbers_dict = organize_movies_dict()
+
+        if string == 'runtimeInMinutes':
+            title = "Runtime In Minutes"
+        elif string == 'budgetInMillions':
+            title = "Budget In Millions"
+        elif string == 'boxOfficeRevenueInMillions':
+            title = "Box Office Revenue In Millions"
+        elif string == "academyAwardNominations":
+            title = "Academy Award Nominations"
+        elif string == "academyAwardWins":
+            title = "Academy Award Wins"
+        elif string == "rottenTomatoesScore":
+            title = "Rotten Tomatoes Score"
+
+        self._clear('text')
+        self._write_text(title, 'text')
+
+        self._do_statistic(title, string, movies_numbers_dict)
+
     def _do_statistic(self, title, string, statistic: dict):
         for i in statistic[string]:
             text = f"{i[1]}:  ({i[0]})"
             self._write_text(text, 'text not space')
+
+        if string in movies_to_others_list:
+            self._clear('list left')
+            for i in statistic[string]:
+                self._write_text(i, 'list left')
 
         make_bar_graphic(statistic[string], title)
