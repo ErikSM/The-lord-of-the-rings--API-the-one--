@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 
+from apps.all_generators import graphic_generator_dict
 from apps.configurations import colors
 
 
@@ -15,9 +16,11 @@ def make_lines_graphic(data_dict: dict, graphic_name='graphic: Line'):
         if not i == 'black':
             list_colors.append(colors[i])
 
+    created_data_dict = graphic_generator_dict(data_dict)
+
     cont = 0
-    for i in data_dict:
-        x_axle, y_axle = data_dict[i][0], data_dict[i][1]
+    for i in created_data_dict:
+        x_axle, y_axle = created_data_dict[i][0], created_data_dict[i][1]
         plt.plot(x_axle, y_axle, color=list_colors[cont], width=1.0)
         cont += 1
 

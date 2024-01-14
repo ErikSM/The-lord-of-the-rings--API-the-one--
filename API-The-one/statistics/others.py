@@ -1,17 +1,25 @@
 from typing import Dict
 
 from access.request import make_request
+from apps.all_generators import others_generator_dict
 from objects.Movie import Movie
 
 movies_to_others_list = ["5cd95395de30eff6ebccde5b", "5cd95395de30eff6ebccde5c", "5cd95395de30eff6ebccde5d"]
 
 
+def _test_generator(temporary_dict: dict):
+    for i in temporary_dict:
+        yield i
+
+
 def characters_with_most_quotes_per_movie():
-    movies_request = make_request('all movies')
+    requested = make_request('all movies')
+    #  movies_request = requested['docs']
+    movies_request = _test_generator(requested['docs'])
 
     movies_dict = dict()
 
-    for i in movies_request['docs']:
+    for i in movies_request:
         movies_dict[i['_id']] = list()
 
     for i in movies_dict:
@@ -26,6 +34,7 @@ def characters_with_most_quotes_per_movie():
     for i in movies_dict:
         total_dict[i] = dict()
         characters = set()
+
         for j in movies_dict[i]:
             if j[1] in characters:
                 cont += 1

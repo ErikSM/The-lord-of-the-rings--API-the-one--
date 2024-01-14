@@ -6,10 +6,39 @@ from access.request import make_request
 from apps.configurations import colors
 from apps.actions import processing_data
 from apps.graphic import make_bar_graphic
+from apps.all_generators import statistic_generator_dict
+from objects.Character import Character
 from objects.Movie import Movie
 from statistics.others import movies_to_others_list, characters_with_most_quotes_per_movie
 from statistics.quantitative_filters import organize_movies_dict, movies_numbers_list
 from statistics.races_genders_realms import realms_founded, race_of_characters, genders_data, statistic_list
+
+
+def _do_graphic(window, string_and_title: tuple, statistic: dict):
+    make_bar_graphic(statistic[string_and_title[1]], string_and_title[0])
+    window.destroy()
+
+
+def _close_window(window):
+    window.destroy()
+
+
+def make_temporary_window(title, string, statistic):
+    size = "150x150+400+200"
+
+    top_window = Toplevel()
+    top_window.title(title)
+    top_window.resizable(False, False)
+    top_window.geometry(size)
+
+    Label(top_window, text='\n\nShow graphic??...').pack()
+
+    Button(top_window, text='yes',
+           command=lambda: _do_graphic(top_window, (title, string), statistic)).pack()
+    Button(top_window, text='no',
+           command=lambda: _close_window(top_window)).pack()
+
+    return top_window
 
 
 class App:
@@ -101,8 +130,10 @@ class App:
             self.list_right.config(state=NORMAL)
             self.list_right.delete(0, END)
             self.list_right.config(state=DISABLED)
+
         elif field == "text":
             self.text.delete(1.0, END)
+
         elif field == "entry path":
             self.entry_path.config(state=NORMAL)
             self.entry_path.delete(0, END)
@@ -117,6 +148,7 @@ class App:
             self.list_right.config(state=DISABLED)
 
     def _write_text(self, message, field='text'):
+
         if field == "list left":
             self.list_left.insert(END, message)
 
@@ -124,10 +156,12 @@ class App:
             self.list_right.config(state=NORMAL)
             self.list_right.insert(END, message)
             self.list_right.config(state=DISABLED)
+
         elif field == "entry path":
             self.entry_path.config(state=NORMAL)
             self.entry_path.insert(END, f'{message}>')
             self.entry_path.config(state=DISABLED)
+
         elif field == "text not space":
             self.text.insert(END, '\n')
             self.text.insert(END, message)
@@ -261,19 +295,24 @@ class App:
         self.setting_buttons('finish')
         self.text.config(state=DISABLED)
 
-
-#  ---  ------------ in progress  ----------  --------
+    #  ---  ------------ in progress  ----------  --------
+        #  *obs: execucao esta muito lenta
     def processing_others(self, string):
 
-        title = Movie(string)
+        title_dict = {"5cd95395de30eff6ebccde5b": "The Two Towers",
+                      "5cd95395de30eff6ebccde5c": "The Fellowship of the Ring",
+                      "5cd95395de30eff6ebccde5d": "The Return of the King"}
+
+        title = title_dict[string]
         statistic_dict = characters_with_most_quotes_per_movie()
 
         self._clear('text')
         self._write_text(title, 'text')
 
         self._do_statistic(title, string, statistic_dict)
+        self.setting_buttons('others')
 
-#  ---------------------------------------------------
+    #  ---------------------------------------------------
 
     def processing_statistic(self, string):
         title = None
@@ -317,13 +356,24 @@ class App:
         self._do_statistic(title, string, movies_numbers_dict)
 
     def _do_statistic(self, title, string, statistic: dict):
-        for i in statistic[string]:
-            text = f"{i[1]}:  ({i[0]})"
-            self._write_text(text, 'text not space')
 
         if string in movies_to_others_list:
+            test_dict_dois = statistic_generator_dict(statistic[string])
             self._clear('list left')
-            for i in statistic[string]:
+
+            for i in test_dict_dois:
+                text = f"{i[1]}:  ({i[0]})"
+                self._write_text(text, 'text not space')
+
                 self._write_text(i, 'list left')
 
-        make_bar_graphic(statistic[string], title)
+            #  make_temporary_window(title, string, statistic)
+
+        else:
+            test_dict = statistic_generator_dict(statistic[string])
+
+            for i in test_dict:
+                text = f"{i[1]}:  ({i[0]})"
+                self._write_text(text, 'text not space')
+
+            make_bar_graphic(statistic[string], title)

@@ -67,4 +67,9 @@ def characters_with_most_quotes_per_movie():
         make_bar_graphic(total_amount[i], f'Movie: {Movie(i)}')
 
 
-characters_with_most_quotes_per_movie()
+# characters_with_most_quotes_per_movie()
+
+teste = make_request('all characters')
+for i in teste['docs']:
+    print(i)
+
